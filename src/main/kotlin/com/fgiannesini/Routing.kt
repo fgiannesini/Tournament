@@ -9,5 +9,8 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("Hello World!")
         }
+        get("/player/1") {
+            call.respond(Player(1, "toto"))
+        }
     }
 }
