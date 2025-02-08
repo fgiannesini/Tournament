@@ -1,16 +1,21 @@
 package com.fgiannesini
 
+import com.fgiannesini.domain.Player
+import com.fgiannesini.domain.PlayerService
+import com.fgiannesini.rest.playerRouting
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import io.mockk.every
+import io.mockk.mockk
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import kotlin.test.Test
 
-class ApplicationKtTest {
+class PlayerRoutingTest {
 
     @Test
     fun `Should return hello world when calling root`() = testApplication {
@@ -24,8 +29,10 @@ class ApplicationKtTest {
 
     @Test
     fun `Should get a player`() = testApplication {
+        val playerService = mockk<PlayerService>()
+        every {playerService.get() } returns listOf()
         application {
-            module()
+            playerRouting(playerService)
         }
 
         val response = client.get("/player/1")
@@ -41,8 +48,10 @@ class ApplicationKtTest {
 
     @Test
     fun `Should create a player`() = testApplication {
+        val playerService = mockk<PlayerService>()
+        every {playerService.create() } returns Player(1)
         application {
-            module()
+            playerRouting(playerService)
         }
 
         @Language("JSON")

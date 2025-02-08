@@ -1,4 +1,4 @@
-package com.fgiannesini
+package com.fgiannesini.rest
 
 import kotlinx.serialization.Serializable
 
