@@ -38,4 +38,28 @@ class ApplicationKtTest {
             }"""
         JSONAssert.assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
     }
+
+    @Test
+    fun `Should create a player`() = testApplication {
+        application {
+            module()
+        }
+
+        @Language("JSON")
+        val body = """{
+            "pseudo": "toto"
+            }"""
+        val response = client.post("/player") {
+            contentType(ContentType.Application.Json)
+            setBody(body)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        @Language("JSON")
+        val expected = """{
+            "id": 1,
+            "pseudo": "toto"
+            }"""
+        JSONAssert.assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
+    }
 }
