@@ -1,6 +1,7 @@
 package com.fgiannesini
 
 import com.fgiannesini.adapter.PlayerDynamoDbPersistence
+import com.fgiannesini.domain.PlayerIdGenerator
 import com.fgiannesini.domain.PlayerPersistence
 import com.fgiannesini.domain.PlayerService
 import io.ktor.server.application.*
@@ -29,7 +30,8 @@ fun Application.configureKoin() {
                     .build()
             }
             single<PlayerPersistence> { PlayerDynamoDbPersistence(get()) }
-            single<PlayerService> { PlayerService(get()) }
+            single<PlayerIdGenerator> { PlayerIdGenerator() }
+            single<PlayerService> { PlayerService(get(), get()) }
         })
     }
 }
