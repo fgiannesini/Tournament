@@ -7,8 +7,10 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.koin.ktor.ext.inject
 
-fun Application.playerRouting(playerService: PlayerService) {
+fun Application.playerRouting() {
+    val playerService: PlayerService by inject()
     install(ContentNegotiation) {
         json()
     }
@@ -19,7 +21,7 @@ fun Application.playerRouting(playerService: PlayerService) {
         get("/player/{playerId}") {
             val playerId = call.parameters["playerId"]?.toLong()
             val player = playerService.get(playerId!!)
-            call.respond(PlayerInformation.from(player!!))
+            call.respond(PlayerInformation.from(player))
         }
         post("/player") {
             val playerInformation = call.receive<PlayerCreation>()

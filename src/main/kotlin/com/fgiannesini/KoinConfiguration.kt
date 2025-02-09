@@ -1,6 +1,8 @@
 package com.fgiannesini
 
-import com.fgiannesini.domain.HelloService
+import com.fgiannesini.domain.PlayerPersistence
+import com.fgiannesini.domain.PlayerService
+import com.fgiannesini.infrastructure.PlayerPersistenceImpl
 import io.ktor.server.application.*
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -10,11 +12,8 @@ fun Application.configureKoin() {
     install(Koin) {
         slf4jLogger()
         modules(module {
-            single<HelloService> {
-                HelloService {
-                    println(environment.log.info("Hello, World!"))
-                }
-            }
+            single<PlayerService> { PlayerService(get()) }
+            single<PlayerPersistence> { PlayerPersistenceImpl() }
         })
     }
 }
