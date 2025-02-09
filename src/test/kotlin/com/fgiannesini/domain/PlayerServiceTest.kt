@@ -33,4 +33,22 @@ class PlayerServiceTest {
         assertEquals(expected, created)
         verify(exactly = 1) { playerPersistence.save(expected) }
     }
+
+    @Test
+    fun `Should update a player`() {
+        val playerPersistence = mockk<PlayerPersistence>()
+        every { playerPersistence.save(any()) } just runs
+        every { playerPersistence.findBy("550e8400-e29b-41d4-a716-446655440000") } returns Player(
+            "550e8400-e29b-41d4-a716-446655440000",
+            "aRandomPseudo",
+            0
+        )
+
+        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
+        val updated = playerService.update("550e8400-e29b-41d4-a716-446655440000", 10)
+
+        val expected = Player("550e8400-e29b-41d4-a716-446655440000", "aRandomPseudo", 10)
+        assertEquals(expected, updated)
+        verify(exactly = 1) { playerPersistence.save(expected) }
+    }
 }

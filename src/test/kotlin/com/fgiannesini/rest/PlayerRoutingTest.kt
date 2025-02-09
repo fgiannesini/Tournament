@@ -77,14 +77,14 @@ class PlayerRoutingTest {
     @Test
     fun `Should update a player`() = testApplication {
         val playerService = mockk<PlayerService>()
-        every { playerService.update(10) } returns Player("1", "aRandomPseudo", 10)
+        every { playerService.update("1", 10) } returns Player("1", "aRandomPseudo", 10)
         application { testModule(playerService) }
 
         @Language("JSON")
         val body = """{
               "points": 10
             }"""
-        val response = client.patch("/player") {
+        val response = client.patch("/player/1") {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
@@ -97,6 +97,6 @@ class PlayerRoutingTest {
             "points": 10
             }"""
         assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
-        verify(exactly = 1) { playerService.update(any()) }
+        verify(exactly = 1) { playerService.update(any(), any()) }
     }
 }

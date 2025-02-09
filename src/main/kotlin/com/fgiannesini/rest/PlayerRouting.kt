@@ -25,9 +25,10 @@ fun Application.playerRouting() {
             val player = playerService.create(playerCreation.pseudo)
             call.respond(PlayerInformation.from(player))
         }
-        patch("/player") {
+        patch("/player/{playerId}") {
+            val playerId = call.parameters["playerId"]
             val playerUpdate = call.receive<PlayerUpdate>()
-            val player = playerService.update(playerUpdate.points)
+            val player = playerService.update(playerId!!, playerUpdate.points)
             call.respond(PlayerInformation.from(player))
         }
     }
