@@ -2,6 +2,7 @@ package com.fgiannesini.adapter
 
 
 import com.fgiannesini.domain.NOT_FOUND
+import com.fgiannesini.domain.Player
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.testcontainers.containers.localstack.LocalStackContainer
@@ -50,5 +51,16 @@ class PlayerDynamoDbPersistenceTest {
         val playerPersistence = PlayerDynamoDbPersistence(dynamoDbClient)
         val retrievedUser = playerPersistence.findBy("not existing hash")
         assertEquals(NOT_FOUND, retrievedUser)
+    }
+
+    @Test
+    fun `Should save and find a player`() {
+        val playerPersistence = PlayerDynamoDbPersistence(dynamoDbClient)
+        val id = "8c356f87-77cd-4483-89ff-1fc9dfbcc994"
+        playerPersistence.save(
+            Player(id, "aRandomPseudo")
+        )
+        val player = playerPersistence.findBy(id)
+        assertEquals(Player(id, "aRandomPseudo"), player)
     }
 }

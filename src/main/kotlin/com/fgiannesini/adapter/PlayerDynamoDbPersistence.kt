@@ -35,6 +35,30 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
 
         val response = dynamoDbClient.getItem(getItemRequest)
         val item = response.item()
-        return NOT_FOUND
+        return when {
+            item.isNotEmpty() -> toPlayer(item)
+            else -> NOT_FOUND
+        }
     }
+
+    private fun toPlayer(item: MutableMap<String, AttributeValue>) =
+        Player(
+            item["id"]?.s()!!,
+            item["pseudo"]?.s()!!
+        )
+
+    override fun save(player: Player) {
+        val putItemRequest = PutItemRequest.builder()
+            .tableName(tableName)
+            .item(
+                mapOf(
+                    "id" to AttributeValue.builder().s(player.id).build(),
+                    "pseudo" to AttributeValue.builder().s(player.pseudo).build()
+                )
+            )
+            .build()
+        dynamoDbClient.putItem(putItemRequest)
+    }
+
+
 }
