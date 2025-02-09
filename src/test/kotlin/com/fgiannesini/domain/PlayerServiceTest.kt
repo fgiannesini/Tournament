@@ -10,10 +10,10 @@ class PlayerServiceTest {
     @Test
     fun `Should get a user`() {
         val playerPersistence = mockk<PlayerPersistence>()
-        every { playerPersistence.findBy(1) } returns Player(1, "aRandomPseudo")
+        every { playerPersistence.findBy("1") } returns Player("1", "aRandomPseudo")
 
         val playerService = PlayerService(playerPersistence)
-        val player = playerService.get(1)
-        assertEquals(Player(1, "aRandomPseudo"), player)
+        val player = playerService.get("1")
+        assertEquals(Player("1", "aRandomPseudo"), player)
     }
 }

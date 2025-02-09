@@ -1,6 +1,7 @@
 package com.fgiannesini.adapter
 
 
+import com.fgiannesini.domain.NOT_FOUND
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.testcontainers.containers.localstack.LocalStackContainer
@@ -10,7 +11,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import kotlin.test.Test
-import kotlin.test.assertNull
+import kotlin.test.assertEquals
 
 class PlayerDynamoDbPersistenceTest {
     companion object {
@@ -19,7 +20,6 @@ class PlayerDynamoDbPersistenceTest {
                 .withServices(LocalStackContainer.Service.DYNAMODB)
 
         private lateinit var dynamoDbClient: DynamoDbClient
-        private lateinit var playerPersistence: PlayerDynamoDbPersistence
 
         @BeforeClass
         @JvmStatic
@@ -36,7 +36,6 @@ class PlayerDynamoDbPersistenceTest {
                 .endpointOverride(localStack.getEndpointOverride(LocalStackContainer.Service.DYNAMODB))
                 .build()
 
-            playerPersistence = PlayerDynamoDbPersistence(dynamoDbClient)
         }
 
         @AfterClass
@@ -47,8 +46,9 @@ class PlayerDynamoDbPersistenceTest {
     }
 
     @Test
-    fun `test find non-existing user`() {
-        val retrievedUser = playerPersistence.findBy(99)
-        assertNull(retrievedUser)
+    fun `Should not find non-existing player`() {
+        val playerPersistence = PlayerDynamoDbPersistence(dynamoDbClient)
+        val retrievedUser = playerPersistence.findBy("not existing hash")
+        assertEquals(NOT_FOUND, retrievedUser)
     }
 }

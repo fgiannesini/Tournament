@@ -1,10 +1,10 @@
 package com.fgiannesini.domain
 
 class PlayerService(playerPersistence: PlayerPersistence) {
-    fun get(playerId: Long): Player {
+    fun get(playerId: String): Player {
         return Player(playerId, "aRandomPseudo")
     }
     fun create(player :Player) : Player {
-        return player.copy(id = 1)
+        return player.copy(id = "1")
     }
 }

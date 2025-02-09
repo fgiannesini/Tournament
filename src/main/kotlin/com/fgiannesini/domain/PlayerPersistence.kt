@@ -2,5 +2,5 @@ package com.fgiannesini.domain
 
 interface PlayerPersistence {
 
-    fun findBy(playerId: Long): Player
+    fun findBy(playerId: String): Player
 }

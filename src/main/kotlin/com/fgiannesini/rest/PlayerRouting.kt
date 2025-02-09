@@ -19,7 +19,7 @@ fun Application.playerRouting() {
             call.respondText("Hello World!")
         }
         get("/player/{playerId}") {
-            val playerId = call.parameters["playerId"]?.toLong()
+            val playerId = call.parameters["playerId"]
             val player = playerService.get(playerId!!)
             call.respond(PlayerInformation.from(player))
         }
