@@ -27,7 +27,7 @@ class PlayerServiceTest {
         every { playerIdGenerator.new() } returns "550e8400-e29b-41d4-a716-446655440000"
 
         val playerService = PlayerService(playerPersistence, playerIdGenerator)
-        val created = playerService.create(Player(NO_ID, "aRandomPseudo", 0))
+        val created = playerService.create("aRandomPseudo")
 
         val expected = Player("550e8400-e29b-41d4-a716-446655440000", "aRandomPseudo", 0)
         assertEquals(expected, created)

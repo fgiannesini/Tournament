@@ -9,8 +9,8 @@ class PlayerService(
         return playerPersistence.findBy(playerId)
     }
 
-    fun create(player: Player): Player {
-        val playerWithId = player.copy(id = playerIdGenerator.new())
+    fun create(pseudo: String): Player {
+        val playerWithId = Player(playerIdGenerator.new(), pseudo, 0)
         playerPersistence.save(playerWithId)
         return playerWithId
     }

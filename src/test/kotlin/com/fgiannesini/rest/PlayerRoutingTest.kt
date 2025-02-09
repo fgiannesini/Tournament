@@ -32,7 +32,7 @@ class PlayerRoutingTest {
     @Test
     fun `Should get a player`() = testApplication {
         val playerService = mockk<PlayerService>()
-        every { playerService.get("1") } returns Player("1", "aRandomPseudo", 0)
+        every { playerService.get("1") } returns Player("1", "aRandomPseudo", 5)
         application { testModule(playerService) }
 
         val response = client.get("/player/1")
@@ -41,15 +41,17 @@ class PlayerRoutingTest {
         @Language("JSON")
         val expected = """{
             "id": "1",
-            "pseudo": "aRandomPseudo"
+            "pseudo": "aRandomPseudo",
+            "points": 5
             }"""
         assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
+        verify(exactly = 1) { playerService.get(any()) }
     }
 
     @Test
     fun `Should create a player`() = testApplication {
         val playerService = mockk<PlayerService>()
-        every { playerService.create(any()) } returns Player("1", "aRandomPseudo", 0)
+        every { playerService.create("aRandomPseudo") } returns Player("1", "aRandomPseudo", 0)
         application { testModule(playerService) }
 
         @Language("JSON")
@@ -65,9 +67,11 @@ class PlayerRoutingTest {
         @Language("JSON")
         val expected = """{
             "id": "1",
-            "pseudo": "aRandomPseudo"
+            "pseudo": "aRandomPseudo",
+            "points": 0
             }"""
         assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
+        verify(exactly = 1) { playerService.create(any()) }
     }
 
     @Test

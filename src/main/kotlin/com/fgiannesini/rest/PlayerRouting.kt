@@ -21,8 +21,8 @@ fun Application.playerRouting() {
             call.respond(PlayerInformation.from(player))
         }
         post("/player") {
-            val playerInformation = call.receive<PlayerCreation>()
-            val player = playerService.create(playerInformation.toPlayer())
+            val playerCreation = call.receive<PlayerCreation>()
+            val player = playerService.create(playerCreation.pseudo)
             call.respond(PlayerInformation.from(player))
         }
         patch("/player") {
