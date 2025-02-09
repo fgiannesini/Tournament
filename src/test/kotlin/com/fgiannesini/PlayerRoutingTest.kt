@@ -49,14 +49,14 @@ class PlayerRoutingTest {
     @Test
     fun `Should create a player`() = testApplication {
         val playerService = mockk<PlayerService>()
-        every {playerService.create() } returns Player(1, "aRandomPseudo")
+        every {playerService.create(any()) } returns Player(1, "aRandomPseudo")
         application {
             playerRouting(playerService)
         }
 
         @Language("JSON")
         val body = """{
-            "pseudo": "toto"
+            "pseudo": "aRandomPseudo"
             }"""
         val response = client.post("/player") {
             contentType(ContentType.Application.Json)
@@ -67,7 +67,7 @@ class PlayerRoutingTest {
         @Language("JSON")
         val expected = """{
             "id": 1,
-            "pseudo": "toto"
+            "pseudo": "aRandomPseudo"
             }"""
         JSONAssert.assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
     }
