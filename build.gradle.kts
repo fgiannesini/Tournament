@@ -29,6 +29,10 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.contentnegocitation)
     implementation(libs.ktor.serialization.json)
+    implementation(libs.dynamodb)
+    implementation(libs.testcontainers)
+    implementation(libs.testcontainers.localstack)
+
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.jsonassert)
