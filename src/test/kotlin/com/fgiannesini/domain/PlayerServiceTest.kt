@@ -13,7 +13,9 @@ class PlayerServiceTest {
 
         val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
         val player = playerService.get("1")
+
         assertEquals(Player("1", "aRandomPseudo"), player)
+        verify(exactly = 1) { playerPersistence.findBy(any()) }
     }
 
     @Test

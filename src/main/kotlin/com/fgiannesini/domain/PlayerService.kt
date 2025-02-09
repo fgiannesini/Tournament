@@ -6,7 +6,7 @@ class PlayerService(
 ) {
 
     fun get(playerId: String): Player {
-        return Player(playerId, "aRandomPseudo")
+        return playerPersistence.findBy(playerId)
     }
 
     fun create(player :Player) : Player {
