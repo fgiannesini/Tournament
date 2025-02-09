@@ -2,7 +2,6 @@ package com.fgiannesini.rest
 
 import com.fgiannesini.domain.Player
 import com.fgiannesini.domain.PlayerService
-import com.fgiannesini.module
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -18,16 +17,6 @@ import org.skyscreamer.jsonassert.JSONCompareMode
 import kotlin.test.Test
 
 class PlayerRoutingTest {
-
-    @Test
-    fun `Should return hello world when calling root`() = testApplication {
-        application {
-            module()
-        }
-        val response = client.get("/")
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals("Hello World!", response.bodyAsText())
-    }
 
     private fun Application.testModule(playerService: PlayerService) {
         install(Koin) {

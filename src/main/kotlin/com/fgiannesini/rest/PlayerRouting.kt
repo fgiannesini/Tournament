@@ -15,9 +15,6 @@ fun Application.playerRouting() {
         json()
     }
     routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
         get("/player/{playerId}") {
             val playerId = call.parameters["playerId"]
             val player = playerService.get(playerId!!)
