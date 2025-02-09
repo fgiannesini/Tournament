@@ -16,8 +16,10 @@ fun Application.playerRouting(playerService: PlayerService) {
         get("/") {
             call.respondText("Hello World!")
         }
-        get("/player/1") {
-            call.respond(PlayerInformation(1, "toto"))
+        get("/player/{playerId}") {
+            val playerId = call.parameters["playerId"]?.toLongOrNull() ?: 0
+            val player = playerService.get(playerId)
+            call.respond(PlayerInformation.from(player!!))
         }
         post("/player") {
             val playerInformation = call.receive<PlayerCreation>()

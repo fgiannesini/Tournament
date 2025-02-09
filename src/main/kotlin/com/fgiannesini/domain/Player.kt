@@ -1,3 +1,3 @@
 package com.fgiannesini.domain
 
-data class Player(val id: Long?)
+data class Player(val id: Long?, val pseudo: String)
