@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PlayerCreation(val pseudo : String) {
     fun toPlayer(): Player {
-        return Player(NO_ID, pseudo)
+        return Player(NO_ID, pseudo, 0)
     }
 }

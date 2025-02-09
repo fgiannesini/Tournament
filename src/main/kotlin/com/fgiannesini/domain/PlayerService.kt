@@ -9,9 +9,13 @@ class PlayerService(
         return playerPersistence.findBy(playerId)
     }
 
-    fun create(player :Player) : Player {
+    fun create(player: Player): Player {
         val playerWithId = player.copy(id = playerIdGenerator.new())
         playerPersistence.save(playerWithId)
         return playerWithId
+    }
+
+    fun update(points: Int): Player {
+        return NOT_FOUND
     }
 }

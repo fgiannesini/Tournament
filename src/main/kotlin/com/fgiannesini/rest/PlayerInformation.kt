@@ -4,10 +4,10 @@ import com.fgiannesini.domain.Player
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PlayerInformation(val id: String, val pseudo: String) {
+data class PlayerInformation(val id: String, val pseudo: String, val points: Int) {
     companion object {
         fun from(player : Player) : PlayerInformation {
-            return PlayerInformation(player.id, player.pseudo)
+            return PlayerInformation(player.id, player.pseudo, player.points)
         }
     }
 }

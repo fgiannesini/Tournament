@@ -35,9 +35,9 @@ class PlayerDynamoDbPersistenceTest {
         val playerPersistence: PlayerPersistence = getKoin().get()
         val id = "8c356f87-77cd-4483-89ff-1fc9dfbcc994"
         playerPersistence.save(
-            Player(id, "aRandomPseudo")
+            Player(id, "aRandomPseudo", 0)
         )
         val player = playerPersistence.findBy(id)
-        assertEquals(Player(id, "aRandomPseudo"), player)
+        assertEquals(Player(id, "aRandomPseudo", 0), player)
     }
 }

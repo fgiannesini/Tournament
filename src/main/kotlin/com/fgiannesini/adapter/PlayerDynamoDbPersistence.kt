@@ -44,7 +44,8 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
     private fun toPlayer(item: MutableMap<String, AttributeValue>) =
         Player(
             item["id"]?.s()!!,
-            item["pseudo"]?.s()!!
+            item["pseudo"]?.s()!!,
+            0
         )
 
     override fun save(player: Player) {

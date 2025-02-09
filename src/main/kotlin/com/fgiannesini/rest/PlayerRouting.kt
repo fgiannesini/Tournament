@@ -25,5 +25,10 @@ fun Application.playerRouting() {
             val player = playerService.create(playerInformation.toPlayer())
             call.respond(PlayerInformation.from(player))
         }
+        patch("/player") {
+            val playerUpdate = call.receive<PlayerUpdate>()
+            val player = playerService.update(playerUpdate.points)
+            call.respond(PlayerInformation.from(player))
+        }
     }
 }
