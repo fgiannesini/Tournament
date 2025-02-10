@@ -39,5 +39,8 @@ fun Application.playerRouting() {
             playerService.update(playerId!!, playerUpdate.points)
             call.respond(HttpStatusCode.NoContent)
         }
+        patch("/player") {
+            call.respond(HttpStatusCode.BadRequest, "Player id is required : /player/{playerId}")
+        }
     }
 }

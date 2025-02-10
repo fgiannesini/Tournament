@@ -63,7 +63,6 @@ class PlayerRoutingTest {
     @Test
     fun `Should return an error when player id is not provided`() = testApplication {
         val playerService = mockk<PlayerService>()
-        every { playerService.get(any()) } returns NOT_FOUND
         application { testModule(playerService) }
 
         val response = client.get("/player")
@@ -107,5 +106,20 @@ class PlayerRoutingTest {
         }
         assertEquals(HttpStatusCode.NoContent, response.status)
         verify(exactly = 1) { playerService.update(any(), any()) }
+    }
+
+    @Test
+    fun `Should return an error when player id to update is not provided`() = testApplication {
+        application { testModule(mockk<PlayerService>()) }
+
+        @Language("JSON")
+        val body = """{
+              "points": 10
+            }"""
+        val response = client.patch("/player") {
+            contentType(ContentType.Application.Json)
+            setBody(body)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
     }
 }
