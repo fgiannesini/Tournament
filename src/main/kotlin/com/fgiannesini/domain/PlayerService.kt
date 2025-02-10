@@ -17,6 +17,9 @@ class PlayerService(
 
     fun update(playerId: String, points: Int): Player {
         val player = get(playerId)
+        if (player == NOT_FOUND) {
+            return NOT_FOUND
+        }
         val updatedPlayer = player.copy(points = points)
         playerPersistence.save(updatedPlayer)
         return updatedPlayer

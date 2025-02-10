@@ -51,4 +51,16 @@ class PlayerServiceTest {
         assertEquals(expected, updated)
         verify(exactly = 1) { playerPersistence.save(expected) }
     }
+
+    @Test
+    fun `Should not update if a player is not found`() {
+        val playerPersistence = mockk<PlayerPersistence>()
+        every { playerPersistence.findBy(any()) } returns NOT_FOUND
+
+        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
+        val updated = playerService.update("550e8400-e29b-41d4-a716-446655440000", 10)
+
+        assertEquals(NOT_FOUND, updated)
+        verify(exactly = 0) { playerPersistence.save(any()) }
+    }
 }
