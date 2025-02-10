@@ -24,4 +24,8 @@ class PlayerService(
         playerPersistence.save(updatedPlayer)
         return updatedPlayer
     }
+
+    fun deleteAll() {
+
+    }
 }

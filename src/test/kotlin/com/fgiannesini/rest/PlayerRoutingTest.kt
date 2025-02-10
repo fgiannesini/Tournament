@@ -8,9 +8,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.koin.dsl.module
@@ -138,5 +136,16 @@ class PlayerRoutingTest {
             setBody(body)
         }
         assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @Test
+    fun `Should delete all players`() = testApplication {
+        val playerService = mockk<PlayerService>()
+        every { playerService.deleteAll() } just runs
+        application { testModule(playerService) }
+
+        val response = client.delete("/players")
+        assertEquals(HttpStatusCode.NoContent, response.status)
+        verify(exactly = 1) { playerService.deleteAll() }
     }
 }
