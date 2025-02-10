@@ -122,4 +122,21 @@ class PlayerRoutingTest {
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
     }
+
+    @Test
+    fun `Should return an error when player id to update is not found`() = testApplication {
+        val playerService = mockk<PlayerService>()
+        every { playerService.update("1", 10) } returns NOT_FOUND
+        application { testModule(playerService) }
+
+        @Language("JSON")
+        val body = """{
+              "points": 10
+            }"""
+        val response = client.patch("/player/1") {
+            contentType(ContentType.Application.Json)
+            setBody(body)
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
 }
