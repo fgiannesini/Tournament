@@ -63,4 +63,15 @@ class PlayerServiceTest {
         assertEquals(NOT_FOUND, updated)
         verify(exactly = 0) { playerPersistence.save(any()) }
     }
+
+    @Test
+    fun `Should delete all players`() {
+        val playerPersistence = mockk<PlayerPersistence>()
+        every { playerPersistence.deleteAll() } just runs
+
+        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
+        playerService.deleteAll()
+
+        verify(exactly = 1) { playerPersistence.deleteAll() }
+    }
 }

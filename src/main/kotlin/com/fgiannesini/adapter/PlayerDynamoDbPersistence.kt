@@ -61,5 +61,9 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
         dynamoDbClient.putItem(putItemRequest)
     }
 
+    override fun deleteAll() {
+
+    }
+
 
 }

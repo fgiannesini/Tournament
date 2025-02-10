@@ -26,6 +26,6 @@ class PlayerService(
     }
 
     fun deleteAll() {
-
+        playerPersistence.deleteAll()
     }
 }
