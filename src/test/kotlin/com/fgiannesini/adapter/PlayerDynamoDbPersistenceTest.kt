@@ -40,4 +40,20 @@ class PlayerDynamoDbPersistenceTest {
         val player = playerPersistence.findBy(id)
         assertEquals(Player(id, "aRandomPseudo", 0), player)
     }
+
+    @Test
+    fun `Should delete all players`() {
+        val playerPersistence: PlayerPersistence = getKoin().get()
+        playerPersistence.save(
+            Player("1", "aRandomPseudo", 0)
+        )
+        playerPersistence.save(
+            Player("2", "anOtherRandomPseudo", 0)
+        )
+
+        playerPersistence.deleteAll()
+
+        assertEquals(NOT_FOUND, playerPersistence.findBy("1"))
+        assertEquals(NOT_FOUND, playerPersistence.findBy("2"))
+    }
 }

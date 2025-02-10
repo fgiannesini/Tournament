@@ -62,8 +62,21 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
     }
 
     override fun deleteAll() {
+        val scanRequest = ScanRequest.builder().tableName(tableName).build()
+        val scanResponse = dynamoDbClient.scan(scanRequest)
 
+        val deleteRequests = scanResponse.items().map { item ->
+            WriteRequest.builder()
+                .deleteRequest(DeleteRequest.builder().key(mapOf("id" to item["id"]!!)).build())
+                .build()
+        }
+
+        if (deleteRequests.isNotEmpty()) {
+            val batchWriteRequest = BatchWriteItemRequest.builder()
+                .requestItems(mapOf(tableName to deleteRequests))
+                .build()
+
+            dynamoDbClient.batchWriteItem(batchWriteRequest)
+        }
     }
-
-
 }
