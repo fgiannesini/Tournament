@@ -63,14 +63,8 @@ class PlayerRoutingTest {
             setBody(body)
         }
 
-        assertEquals(HttpStatusCode.OK, response.status)
-        @Language("JSON")
-        val expected = """{
-            "id": "1",
-            "pseudo": "aRandomPseudo",
-            "points": 0
-            }"""
-        assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
+        assertEquals(HttpStatusCode.Created, response.status)
+        assertEquals("/player/1", response.headers.get(HttpHeaders.Location))
         verify(exactly = 1) { playerService.create(any()) }
     }
 
@@ -88,15 +82,7 @@ class PlayerRoutingTest {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        @Language("JSON")
-        val expected = """{
-            "id": "1",
-            "pseudo": "aRandomPseudo",
-            "points": 10
-            }"""
-        assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
+        assertEquals(HttpStatusCode.NoContent, response.status)
         verify(exactly = 1) { playerService.update(any(), any()) }
     }
 }
