@@ -34,7 +34,7 @@ class PlayerRoutingTest {
         every { playerService.get("1") } returns Player("1", "aRandomPseudo", 5)
         application { testModule(playerService) }
 
-        val response = client.get("/player/1")
+        val response = client.get("/players/1")
 
         assertEquals(HttpStatusCode.OK, response.status)
         @Language("JSON")
@@ -53,7 +53,7 @@ class PlayerRoutingTest {
         every { playerService.get(any()) } returns NOT_FOUND
         application { testModule(playerService) }
 
-        val response = client.get("/player/1")
+        val response = client.get("/players/1")
 
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
@@ -63,7 +63,7 @@ class PlayerRoutingTest {
         val playerService = mockk<PlayerService>()
         application { testModule(playerService) }
 
-        val response = client.get("/player")
+        val response = client.get("/players")
 
         assertEquals(HttpStatusCode.BadRequest, response.status)
     }
@@ -78,13 +78,13 @@ class PlayerRoutingTest {
         val body = """{
             "pseudo": "aRandomPseudo"
             }"""
-        val response = client.post("/player") {
+        val response = client.post("/players") {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
 
         assertEquals(HttpStatusCode.Created, response.status)
-        assertEquals("/player/1", response.headers[HttpHeaders.Location])
+        assertEquals("/players/1", response.headers[HttpHeaders.Location])
         verify(exactly = 1) { playerService.create(any()) }
     }
 
@@ -98,7 +98,7 @@ class PlayerRoutingTest {
         val body = """{
               "points": 10
             }"""
-        val response = client.patch("/player/1") {
+        val response = client.patch("/players/1") {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
@@ -114,7 +114,7 @@ class PlayerRoutingTest {
         val body = """{
               "points": 10
             }"""
-        val response = client.patch("/player") {
+        val response = client.patch("/players") {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
@@ -131,7 +131,7 @@ class PlayerRoutingTest {
         val body = """{
               "points": 10
             }"""
-        val response = client.patch("/player/1") {
+        val response = client.patch("/players/1") {
             contentType(ContentType.Application.Json)
             setBody(body)
         }

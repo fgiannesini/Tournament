@@ -17,23 +17,23 @@ fun Application.playerRouting() {
         json()
     }
     routing {
-        get("/player") {
+        get("/players") {
             call.respond(HttpStatusCode.BadRequest, "Player id is required : /player/{playerId}")
         }
-        get("/player/{playerId}") {
+        get("/players/{playerId}") {
             val playerId = call.parameters["playerId"]
             when (val player = playerService.get(playerId!!)) {
                 NOT_FOUND -> call.respond(HttpStatusCode.NotFound)
                 else -> call.respond(PlayerInformation.from(player))
             }
         }
-        post("/player") {
+        post("/players") {
             val playerCreation = call.receive<PlayerCreation>()
             val player = playerService.create(playerCreation.pseudo)
-            call.response.headers.append(HttpHeaders.Location, "/player/${player.id}")
+            call.response.headers.append(HttpHeaders.Location, "/players/${player.id}")
             call.respond(HttpStatusCode.Created)
         }
-        patch("/player/{playerId}") {
+        patch("/players/{playerId}") {
             val playerId = call.parameters["playerId"]
             val playerUpdate = call.receive<PlayerUpdate>()
             when (playerService.update(playerId!!, playerUpdate.points)) {
@@ -41,7 +41,7 @@ fun Application.playerRouting() {
                 else -> call.respond(HttpStatusCode.NoContent)
             }
         }
-        patch("/player") {
+        patch("/players") {
             call.respond(HttpStatusCode.BadRequest, "Player id is required : /player/{playerId}")
         }
         delete("/players") {
