@@ -1,5 +1,6 @@
 package com.fgiannesini.rest
 
+import com.fgiannesini.domain.NOT_FOUND
 import com.fgiannesini.domain.Player
 import com.fgiannesini.domain.PlayerService
 import io.ktor.client.request.*
@@ -49,6 +50,28 @@ class PlayerRoutingTest {
     }
 
     @Test
+    fun `Should return an error when a player is not got`() = testApplication {
+        val playerService = mockk<PlayerService>()
+        every { playerService.get(any()) } returns NOT_FOUND
+        application { testModule(playerService) }
+
+        val response = client.get("/player/1")
+
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @Test
+    fun `Should return an error when player id is not provided`() = testApplication {
+        val playerService = mockk<PlayerService>()
+        every { playerService.get(any()) } returns NOT_FOUND
+        application { testModule(playerService) }
+
+        val response = client.get("/player")
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
     fun `Should create a player`() = testApplication {
         val playerService = mockk<PlayerService>()
         every { playerService.create("aRandomPseudo") } returns Player("1", "aRandomPseudo", 0)
@@ -64,7 +87,7 @@ class PlayerRoutingTest {
         }
 
         assertEquals(HttpStatusCode.Created, response.status)
-        assertEquals("/player/1", response.headers.get(HttpHeaders.Location))
+        assertEquals("/player/1", response.headers[HttpHeaders.Location])
         verify(exactly = 1) { playerService.create(any()) }
     }
 

@@ -1,5 +1,6 @@
 package com.fgiannesini.rest
 
+import com.fgiannesini.domain.NOT_FOUND
 import com.fgiannesini.domain.PlayerService
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -16,10 +17,15 @@ fun Application.playerRouting() {
         json()
     }
     routing {
+        get("/player") {
+            call.respond(HttpStatusCode.BadRequest, "Player id is required : /player/{playerId}")
+        }
         get("/player/{playerId}") {
             val playerId = call.parameters["playerId"]
-            val player = playerService.get(playerId!!)
-            call.respond(PlayerInformation.from(player))
+            when (val player = playerService.get(playerId!!)) {
+                NOT_FOUND -> call.respond(HttpStatusCode.NotFound)
+                else -> call.respond(PlayerInformation.from(player))
+            }
         }
         post("/player") {
             val playerCreation = call.receive<PlayerCreation>()
@@ -30,7 +36,7 @@ fun Application.playerRouting() {
         patch("/player/{playerId}") {
             val playerId = call.parameters["playerId"]
             val playerUpdate = call.receive<PlayerUpdate>()
-            val player = playerService.update(playerId!!, playerUpdate.points)
+            playerService.update(playerId!!, playerUpdate.points)
             call.respond(HttpStatusCode.NoContent)
         }
     }
