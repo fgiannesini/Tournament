@@ -8,7 +8,7 @@ import software.amazon.awssdk.services.dynamodb.model.*
 
 class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : PlayerPersistence {
 
-    private val tableName = "Player"
+    private val playerTableName = "Player"
 
     init {
         createTableIfNotExists()
@@ -16,7 +16,7 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
 
     private fun createTableIfNotExists() {
         dynamoDbClient.createTable(
-            CreateTableRequest.builder().tableName(tableName)
+            CreateTableRequest.builder().tableName(playerTableName)
                 .keySchema(KeySchemaElement.builder().attributeName("id").keyType(KeyType.HASH).build())
                 .attributeDefinitions(
                     AttributeDefinition.builder().attributeName("id").attributeType(ScalarAttributeType.S).build()
@@ -26,7 +26,8 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
 
     override fun findBy(playerId: String): Player {
         val getItemRequest =
-            GetItemRequest.builder().tableName(tableName).key(mapOf("id" to AttributeValue.fromS(playerId))).build()
+            GetItemRequest.builder().tableName(playerTableName).key(mapOf("id" to AttributeValue.fromS(playerId)))
+                .build()
 
         val response = dynamoDbClient.getItem(getItemRequest)
         val item = response.item()
@@ -43,7 +44,7 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
     )
 
     override fun save(player: Player) {
-        val putItemRequest = PutItemRequest.builder().tableName(tableName).item(
+        val putItemRequest = PutItemRequest.builder().tableName(playerTableName).item(
             mapOf(
                 "id" to AttributeValue.fromS(player.id),
                 "pseudo" to AttributeValue.fromS(player.pseudo),
@@ -58,7 +59,7 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
         do {
             val scanRequest =
                 ScanRequest.builder()
-                    .tableName(tableName)
+                    .tableName(playerTableName)
                     .limit(limit)
                     .exclusiveStartKey(lastEvaluatedKey)
                     .build()
@@ -75,7 +76,8 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
             }
 
             deleteRequests.chunked(25).forEach { chunk ->
-                val batchWriteRequest = BatchWriteItemRequest.builder().requestItems(mapOf(tableName to chunk)).build()
+                val batchWriteRequest =
+                    BatchWriteItemRequest.builder().requestItems(mapOf(playerTableName to chunk)).build()
                 dynamoDbClient.batchWriteItem(batchWriteRequest)
             }
 
@@ -90,7 +92,7 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
         do {
             val scanRequest =
                 ScanRequest.builder()
-                    .tableName(tableName)
+                    .tableName(playerTableName)
                     .limit(limit)
                     .exclusiveStartKey(lastEvaluatedKey)
                     .build()
