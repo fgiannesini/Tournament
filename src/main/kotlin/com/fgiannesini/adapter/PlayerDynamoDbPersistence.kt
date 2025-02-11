@@ -16,22 +16,17 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
 
     private fun createTableIfNotExists() {
         dynamoDbClient.createTable(
-            CreateTableRequest.builder()
-                .tableName(tableName)
+            CreateTableRequest.builder().tableName(tableName)
                 .keySchema(KeySchemaElement.builder().attributeName("id").keyType(KeyType.HASH).build())
                 .attributeDefinitions(
                     AttributeDefinition.builder().attributeName("id").attributeType(ScalarAttributeType.S).build()
-                )
-                .billingMode(BillingMode.PAY_PER_REQUEST)
-                .build()
+                ).billingMode(BillingMode.PAY_PER_REQUEST).build()
         )
     }
 
     override fun findBy(playerId: String): Player {
-        val getItemRequest = GetItemRequest.builder()
-            .tableName(tableName)
-            .key(mapOf("id" to AttributeValue.fromS(playerId)))
-            .build()
+        val getItemRequest =
+            GetItemRequest.builder().tableName(tableName).key(mapOf("id" to AttributeValue.fromS(playerId))).build()
 
         val response = dynamoDbClient.getItem(getItemRequest)
         val item = response.item()
@@ -41,53 +36,69 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
         }
     }
 
-    private fun toPlayer(item: MutableMap<String, AttributeValue>) =
-        Player(
-            item["id"]?.s()!!,
-            item["pseudo"]?.s()!!,
-            item["score"]?.n()?.toInt()!!,
-        )
+    private fun toPlayer(item: MutableMap<String, AttributeValue>) = Player(
+        item["id"]?.s()!!,
+        item["pseudo"]?.s()!!,
+        item["score"]?.n()?.toInt()!!,
+    )
 
     override fun save(player: Player) {
-        val putItemRequest = PutItemRequest.builder()
-            .tableName(tableName)
-            .item(
-                mapOf(
-                    "id" to AttributeValue.fromS(player.id),
-                    "pseudo" to AttributeValue.fromS(player.pseudo),
-                    "score" to AttributeValue.fromN(player.score.toString())
-                )
+        val putItemRequest = PutItemRequest.builder().tableName(tableName).item(
+            mapOf(
+                "id" to AttributeValue.fromS(player.id),
+                "pseudo" to AttributeValue.fromS(player.pseudo),
+                "score" to AttributeValue.fromN(player.score.toString())
             )
-            .build()
+        ).build()
         dynamoDbClient.putItem(putItemRequest)
     }
 
-    override fun deleteAll() {
-        val scanRequest = ScanRequest.builder().tableName(tableName).build()
-        val scanResponse = dynamoDbClient.scan(scanRequest)
+    override fun deleteAll(limit: Int) {
+        var lastEvaluatedKey: Map<String, AttributeValue>? = null
+        do {
+            val scanRequest =
+                ScanRequest.builder()
+                    .tableName(tableName)
+                    .limit(limit)
+                    .exclusiveStartKey(lastEvaluatedKey)
+                    .build()
 
-        val deleteRequests = scanResponse.items().map { item ->
-            WriteRequest.builder()
-                .deleteRequest(DeleteRequest.builder().key(mapOf("id" to item["id"]!!)).build())
-                .build()
-        }
+            val scanResponse = dynamoDbClient.scan(scanRequest)
+            val deleteRequests = scanResponse.items().map {
+                WriteRequest.builder()
+                    .deleteRequest(
+                        DeleteRequest.builder()
+                            .key(mapOf("id" to it["id"]!!))
+                            .build()
+                    )
+                    .build()
+            }
 
-        if (deleteRequests.isNotEmpty()) {
-            val batchWriteRequest = BatchWriteItemRequest.builder()
-                .requestItems(mapOf(tableName to deleteRequests))
-                .build()
+            deleteRequests.chunked(25).forEach { chunk ->
+                val batchWriteRequest = BatchWriteItemRequest.builder().requestItems(mapOf(tableName to chunk)).build()
+                dynamoDbClient.batchWriteItem(batchWriteRequest)
+            }
 
-            dynamoDbClient.batchWriteItem(batchWriteRequest)
-        }
+            lastEvaluatedKey = scanResponse.lastEvaluatedKey()?.takeIf { it.isNotEmpty() }
+        } while (lastEvaluatedKey != null)
+
     }
 
-    override fun findAll(): List<Player> {
-        val scanRequest = ScanRequest.builder()
-            .tableName(tableName)
-            .build()
+    override fun findAll(limit: Int): List<Player> {
+        val allItems = mutableListOf<Player>()
+        var lastEvaluatedKey: Map<String, AttributeValue>? = null
+        do {
+            val scanRequest =
+                ScanRequest.builder()
+                    .tableName(tableName)
+                    .limit(limit)
+                    .exclusiveStartKey(lastEvaluatedKey)
+                    .build()
 
-        val scanResponse = dynamoDbClient.scan(scanRequest)
-
-        return scanResponse.items().map { toPlayer(it) }
+            val scanResponse = dynamoDbClient.scan(scanRequest)
+            allItems.addAll(scanResponse.items().map { toPlayer(it) })
+            lastEvaluatedKey = scanResponse.lastEvaluatedKey()?.takeIf { it.isNotEmpty() }
+        } while (lastEvaluatedKey != null)
+        return allItems
     }
 }

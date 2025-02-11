@@ -48,7 +48,7 @@ class PlayerDynamoDbPersistenceTest {
         val players = listOf(Player("1", "aRandomPseudo", 5), Player("2", "anOtherRandomPseudo", 10))
         players.forEach { playerPersistence.save(it) }
 
-        val actualPlayers = playerPersistence.findAll()
+        val actualPlayers = playerPersistence.findAll(limit = 1)
 
         assertEquals(players, actualPlayers)
     }
@@ -56,16 +56,14 @@ class PlayerDynamoDbPersistenceTest {
     @Test
     fun `Should delete all players`() {
         val playerPersistence: PlayerPersistence = getKoin().get()
-        playerPersistence.save(
-            Player("1", "aRandomPseudo", 5)
-        )
-        playerPersistence.save(
-            Player("2", "anOtherRandomPseudo", 10)
-        )
+        repeat(26) {
+            playerPersistence.save(
+                Player(it.toString(), "aRandomPseudo", 5)
+            )
+        }
 
-        playerPersistence.deleteAll()
+        playerPersistence.deleteAll(limit = 10)
 
-        assertEquals(NOT_FOUND, playerPersistence.findBy("1"))
-        assertEquals(NOT_FOUND, playerPersistence.findBy("2"))
+        assertEquals(listOf(), playerPersistence.findAll())
     }
 }
