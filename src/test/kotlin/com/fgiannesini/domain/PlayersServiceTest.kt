@@ -4,15 +4,15 @@ import io.mockk.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class PlayerServiceTest {
+class PlayersServiceTest {
 
     @Test
     fun `Should get a player`() {
         val playerPersistence = mockk<PlayerPersistence>()
         every { playerPersistence.findBy("1") } returns Player("1", "aRandomPseudo", 0)
 
-        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
-        val player = playerService.get("1")
+        val playersService = PlayersService(playerPersistence, mockk<PlayerIdGenerator>())
+        val player = playersService.get("1")
 
         assertEquals(Player("1", "aRandomPseudo", 0), player)
         verify(exactly = 1) { playerPersistence.findBy(any()) }
@@ -26,8 +26,8 @@ class PlayerServiceTest {
         val playerIdGenerator = mockk<PlayerIdGenerator>()
         every { playerIdGenerator.new() } returns "550e8400-e29b-41d4-a716-446655440000"
 
-        val playerService = PlayerService(playerPersistence, playerIdGenerator)
-        val created = playerService.create("aRandomPseudo")
+        val playersService = PlayersService(playerPersistence, playerIdGenerator)
+        val created = playersService.create("aRandomPseudo")
 
         val expected = Player("550e8400-e29b-41d4-a716-446655440000", "aRandomPseudo", 0)
         assertEquals(expected, created)
@@ -44,8 +44,8 @@ class PlayerServiceTest {
             0
         )
 
-        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
-        val updated = playerService.update("550e8400-e29b-41d4-a716-446655440000", 10)
+        val playersService = PlayersService(playerPersistence, mockk<PlayerIdGenerator>())
+        val updated = playersService.update("550e8400-e29b-41d4-a716-446655440000", 10)
 
         val expected = Player("550e8400-e29b-41d4-a716-446655440000", "aRandomPseudo", 10)
         assertEquals(expected, updated)
@@ -57,8 +57,8 @@ class PlayerServiceTest {
         val playerPersistence = mockk<PlayerPersistence>()
         every { playerPersistence.findBy(any()) } returns NOT_FOUND
 
-        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
-        val updated = playerService.update("550e8400-e29b-41d4-a716-446655440000", 10)
+        val playersService = PlayersService(playerPersistence, mockk<PlayerIdGenerator>())
+        val updated = playersService.update("550e8400-e29b-41d4-a716-446655440000", 10)
 
         assertEquals(NOT_FOUND, updated)
         verify(exactly = 0) { playerPersistence.save(any()) }
@@ -69,8 +69,8 @@ class PlayerServiceTest {
         val playerPersistence = mockk<PlayerPersistence>()
         every { playerPersistence.deleteAll() } just runs
 
-        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
-        playerService.deleteAll()
+        val playersService = PlayersService(playerPersistence, mockk<PlayerIdGenerator>())
+        playersService.deleteAll()
 
         verify(exactly = 1) { playerPersistence.deleteAll() }
     }
@@ -81,8 +81,8 @@ class PlayerServiceTest {
         val players = listOf(Player("550e8400-e29b-41d4-a716-446655440000", "aRandomPseudo", 10))
         every { playerPersistence.findAll() } returns players
 
-        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
-        val actual = playerService.findAll()
+        val playersService = PlayersService(playerPersistence, mockk<PlayerIdGenerator>())
+        val actual = playersService.findAll()
 
         assertEquals(players, actual)
         verify(exactly = 1) { playerPersistence.findAll() }

@@ -1,7 +1,7 @@
 package com.fgiannesini.rest
 
 import com.fgiannesini.domain.NOT_FOUND
-import com.fgiannesini.domain.PlayerService
+import com.fgiannesini.domain.PlayersService
 import com.fgiannesini.domain.RankingService
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -12,22 +12,22 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-fun Application.playerRouting() {
-    val playerService: PlayerService by inject()
+fun Application.playersRouting() {
+    val playersService: PlayersService by inject()
     val rankingService: RankingService by inject()
     install(ContentNegotiation) {
         json()
     }
     routing {
         get("/players") {
-            val players = playerService.findAll()
+            val players = playersService.findAll()
                 .map { PlayerListDetails.from(it) }
                 .sortedByDescending { it.score }
             call.respond(players)
         }
         get("/players/{playerId}") {
             val playerId = call.parameters["playerId"]
-            when (val player = playerService.get(playerId!!)) {
+            when (val player = playersService.get(playerId!!)) {
                 NOT_FOUND -> call.respond(HttpStatusCode.NotFound)
                 else -> {
                     val ranking = rankingService.get(player)
@@ -37,14 +37,14 @@ fun Application.playerRouting() {
         }
         post("/players") {
             val playerCreation = call.receive<PlayerCreation>()
-            val player = playerService.create(playerCreation.pseudo)
+            val player = playersService.create(playerCreation.pseudo)
             call.response.headers.append(HttpHeaders.Location, "/players/${player.id}")
             call.respond(HttpStatusCode.Created)
         }
         patch("/players/{playerId}") {
             val playerId = call.parameters["playerId"]
             val playerUpdate = call.receive<PlayerUpdate>()
-            when (playerService.update(playerId!!, playerUpdate.score)) {
+            when (playersService.update(playerId!!, playerUpdate.score)) {
                 NOT_FOUND -> call.respond(HttpStatusCode.NotFound)
                 else -> call.respond(HttpStatusCode.NoContent)
             }
@@ -53,7 +53,7 @@ fun Application.playerRouting() {
             call.respond(HttpStatusCode.BadRequest, "Player id is required : /player/{playerId}")
         }
         delete("/players") {
-            playerService.deleteAll()
+            playersService.deleteAll()
             call.respond(HttpStatusCode.NoContent)
         }
     }

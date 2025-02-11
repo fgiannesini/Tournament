@@ -1,6 +1,6 @@
 package com.fgiannesini
 
-import com.fgiannesini.rest.playerRouting
+import com.fgiannesini.rest.playersRouting
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
 
@@ -10,5 +10,5 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     configureKoin()
-    playerRouting()
+    playersRouting()
 }

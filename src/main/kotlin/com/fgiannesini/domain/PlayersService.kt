@@ -1,6 +1,6 @@
 package com.fgiannesini.domain
 
-class PlayerService(
+class PlayersService(
     private val playerPersistence: PlayerPersistence,
     private val playerIdGenerator: PlayerIdGenerator
 ) {

@@ -1,7 +1,7 @@
 package com.fgiannesini
 
 import com.fgiannesini.domain.PlayerIdGenerator
-import com.fgiannesini.domain.PlayerService
+import com.fgiannesini.domain.PlayersService
 import com.fgiannesini.domain.RankingService
 import com.fgiannesini.domain.dynamoDbModule
 import io.ktor.server.application.*
@@ -14,7 +14,7 @@ fun Application.configureKoin() {
         slf4jLogger()
         modules(module {
             single<PlayerIdGenerator> { PlayerIdGenerator() }
-            single<PlayerService> { PlayerService(get(), get()) }
+            single<PlayersService> { PlayersService(get(), get()) }
             single<RankingService> { RankingService(get()) }
         }, dynamoDbModule)
     }
