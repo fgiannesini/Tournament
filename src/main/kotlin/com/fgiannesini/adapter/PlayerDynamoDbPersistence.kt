@@ -30,7 +30,7 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
     override fun findBy(playerId: String): Player {
         val getItemRequest = GetItemRequest.builder()
             .tableName(tableName)
-            .key(mapOf("id" to AttributeValue.builder().s(playerId).build()))
+            .key(mapOf("id" to AttributeValue.fromS(playerId)))
             .build()
 
         val response = dynamoDbClient.getItem(getItemRequest)
@@ -53,9 +53,9 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
             .tableName(tableName)
             .item(
                 mapOf(
-                    "id" to AttributeValue.builder().s(player.id).build(),
-                    "pseudo" to AttributeValue.builder().s(player.pseudo).build(),
-                    "score" to AttributeValue.builder().n(player.score.toString()).build()
+                    "id" to AttributeValue.fromS(player.id),
+                    "pseudo" to AttributeValue.fromS(player.pseudo),
+                    "score" to AttributeValue.fromN(player.score.toString())
                 )
             )
             .build()

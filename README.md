@@ -74,3 +74,4 @@ You need docker to launch this application, then you can use the script [launch.
 - Generate OpenApi documentation
 - Expose a swagger
 - Add an authentication via token OAuth2
+- Use aws-sdk-kotlin to simplify request declaration
