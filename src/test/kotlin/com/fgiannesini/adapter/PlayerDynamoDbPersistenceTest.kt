@@ -41,6 +41,18 @@ class PlayerDynamoDbPersistenceTest {
         assertEquals(Player(id, "aRandomPseudo", 0), player)
     }
 
+
+    @Test
+    fun `Should find all players`() {
+        val playerPersistence: PlayerPersistence = getKoin().get()
+        val players = listOf(Player("1", "aRandomPseudo", 0), Player("2", "anOtherRandomPseudo", 0))
+        players.forEach { playerPersistence.save(it) }
+
+        val actualPlayers = playerPersistence.findAll()
+
+        assertEquals(players, actualPlayers)
+    }
+
     @Test
     fun `Should delete all players`() {
         val playerPersistence: PlayerPersistence = getKoin().get()

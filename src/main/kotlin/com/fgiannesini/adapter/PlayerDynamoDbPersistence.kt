@@ -79,4 +79,14 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
             dynamoDbClient.batchWriteItem(batchWriteRequest)
         }
     }
+
+    override fun findAll(): List<Player> {
+        val scanRequest = ScanRequest.builder()
+            .tableName(tableName)
+            .build()
+
+        val scanResponse = dynamoDbClient.scan(scanRequest)
+
+        return scanResponse.items().map { toPlayer(it) }
+    }
 }
