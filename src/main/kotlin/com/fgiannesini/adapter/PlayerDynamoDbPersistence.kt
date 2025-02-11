@@ -45,7 +45,7 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
         Player(
             item["id"]?.s()!!,
             item["pseudo"]?.s()!!,
-            item["points"]?.n()?.toInt()!!,
+            item["score"]?.n()?.toInt()!!,
         )
 
     override fun save(player: Player) {
@@ -55,7 +55,7 @@ class PlayerDynamoDbPersistence(private val dynamoDbClient: DynamoDbClient) : Pl
                 mapOf(
                     "id" to AttributeValue.builder().s(player.id).build(),
                     "pseudo" to AttributeValue.builder().s(player.pseudo).build(),
-                    "points" to AttributeValue.builder().n(player.points.toString()).build()
+                    "score" to AttributeValue.builder().n(player.score.toString()).build()
                 )
             )
             .build()

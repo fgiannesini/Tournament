@@ -37,7 +37,7 @@ fun Application.playerRouting() {
         patch("/players/{playerId}") {
             val playerId = call.parameters["playerId"]
             val playerUpdate = call.receive<PlayerUpdate>()
-            when (playerService.update(playerId!!, playerUpdate.points)) {
+            when (playerService.update(playerId!!, playerUpdate.score)) {
                 NOT_FOUND -> call.respond(HttpStatusCode.NotFound)
                 else -> call.respond(HttpStatusCode.NoContent)
             }

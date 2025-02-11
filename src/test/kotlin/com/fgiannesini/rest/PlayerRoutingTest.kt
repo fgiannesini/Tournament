@@ -41,7 +41,7 @@ class PlayerRoutingTest {
         val expected = """{
             "id": "1",
             "pseudo": "aRandomPseudo",
-            "points": 5
+            "score": 5
             }"""
         assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
         verify(exactly = 1) { playerService.get(any()) }
@@ -86,7 +86,7 @@ class PlayerRoutingTest {
 
         @Language("JSON")
         val body = """{
-              "points": 10
+              "score": 10
             }"""
         val response = client.patch("/players/1") {
             contentType(ContentType.Application.Json)
@@ -102,7 +102,7 @@ class PlayerRoutingTest {
 
         @Language("JSON")
         val body = """{
-              "points": 10
+              "score": 10
             }"""
         val response = client.patch("/players") {
             contentType(ContentType.Application.Json)
@@ -119,7 +119,7 @@ class PlayerRoutingTest {
 
         @Language("JSON")
         val body = """{
-              "points": 10
+              "score": 10
             }"""
         val response = client.patch("/players/1") {
             contentType(ContentType.Application.Json)
@@ -153,7 +153,7 @@ class PlayerRoutingTest {
                 {
                     "id": "1",
                     "pseudo": "aRandomPseudo",
-                    "points": 10
+                    "score": 10
                 }
             ]"""
         assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
