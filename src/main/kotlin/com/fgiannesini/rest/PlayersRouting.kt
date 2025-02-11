@@ -50,7 +50,7 @@ fun Application.playersRouting() {
             }
         }
         patch("/players") {
-            call.respond(HttpStatusCode.BadRequest, "Player id is required : /player/{playerId}")
+            call.respond(HttpStatusCode.BadRequest, "Player id is required : /players/{playerId}")
         }
         delete("/players") {
             playersService.deleteAll()

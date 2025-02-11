@@ -10,18 +10,17 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
 val dynamoDbModule = module {
-    val localStack: LocalStackContainer =
-        LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
-            .withServices(LocalStackContainer.Service.DYNAMODB)
-    localStack.start()
     single<DynamoDbClient> {
+        val localStack: LocalStackContainer =
+            LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
+                .withServices(LocalStackContainer.Service.DYNAMODB)
+        localStack.start()
+        val credentials = StaticCredentialsProvider.create(
+            AwsBasicCredentials.create("fakeAccessKey", "fakeSecretKey")
+        )
         DynamoDbClient.builder()
             .region(Region.EU_WEST_1)
-            .credentialsProvider(
-                StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create("fakeAccessKey", "fakeSecretKey")
-                )
-            )
+            .credentialsProvider(credentials)
             .endpointOverride(localStack.getEndpointOverride(LocalStackContainer.Service.DYNAMODB))
             .build()
     }
