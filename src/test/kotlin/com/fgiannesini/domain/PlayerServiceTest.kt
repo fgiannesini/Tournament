@@ -74,4 +74,17 @@ class PlayerServiceTest {
 
         verify(exactly = 1) { playerPersistence.deleteAll() }
     }
+
+    @Test
+    fun `Should find all players`() {
+        val playerPersistence = mockk<PlayerPersistence>()
+        val players = listOf(Player("550e8400-e29b-41d4-a716-446655440000", "aRandomPseudo", 10))
+        every { playerPersistence.findAll() } returns players
+
+        val playerService = PlayerService(playerPersistence, mockk<PlayerIdGenerator>())
+        val actual = playerService.findAll()
+
+        assertEquals(players, actual)
+        verify(exactly = 1) { playerPersistence.findAll() }
+    }
 }

@@ -28,4 +28,8 @@ class PlayerService(
     fun deleteAll() {
         playerPersistence.deleteAll()
     }
+
+    fun findAll(): List<Player> {
+        return playerPersistence.findAll()
+    }
 }
