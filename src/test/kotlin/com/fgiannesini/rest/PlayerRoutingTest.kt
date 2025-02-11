@@ -59,16 +59,6 @@ class PlayerRoutingTest {
     }
 
     @Test
-    fun `Should return an error when player id is not provided`() = testApplication {
-        val playerService = mockk<PlayerService>()
-        application { testModule(playerService) }
-
-        val response = client.get("/players")
-
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-    }
-
-    @Test
     fun `Should create a player`() = testApplication {
         val playerService = mockk<PlayerService>()
         every { playerService.create("aRandomPseudo") } returns Player("1", "aRandomPseudo", 0)
@@ -147,5 +137,26 @@ class PlayerRoutingTest {
         val response = client.delete("/players")
         assertEquals(HttpStatusCode.NoContent, response.status)
         verify(exactly = 1) { playerService.deleteAll() }
+    }
+
+    @Test
+    fun `Should find all players`() = testApplication {
+        val playerService = mockk<PlayerService>()
+        every { playerService.findAll() } returns listOf(Player("1", "aRandomPseudo", 10))
+        application { testModule(playerService) }
+
+        val response = client.get("/players")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        @Language("JSON")
+        val expected = """[
+                {
+                    "id": "1",
+                    "pseudo": "aRandomPseudo",
+                    "points": 10
+                }
+            ]"""
+        assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
+        verify(exactly = 1) { playerService.findAll() }
     }
 }

@@ -18,7 +18,8 @@ fun Application.playerRouting() {
     }
     routing {
         get("/players") {
-            call.respond(HttpStatusCode.BadRequest, "Player id is required : /player/{playerId}")
+            val players = playerService.findAll().map { PlayerInformation.from(it) }
+            call.respond(players)
         }
         get("/players/{playerId}") {
             val playerId = call.parameters["playerId"]
