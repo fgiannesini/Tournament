@@ -69,6 +69,7 @@ You need docker to launch this application, then you can use the script [launch.
 
 ## TO DO
 
+- Service to get ranking is very slow, need to use an index ?
 - Implements a dockerFile
 - Implements a healthCheck for cloud deployment
 - Generate OpenApi documentation
