@@ -140,9 +140,12 @@ class PlayerRoutingTest {
     }
 
     @Test
-    fun `Should find all players`() = testApplication {
+    fun `Should find all players ordered by score desc`() = testApplication {
         val playerService = mockk<PlayerService>()
-        every { playerService.findAll() } returns listOf(Player("1", "aRandomPseudo", 10))
+        every { playerService.findAll() } returns listOf(
+            Player("1", "second", 10),
+            Player("2", "first", 20)
+        )
         application { testModule(playerService) }
 
         val response = client.get("/players")
@@ -151,8 +154,13 @@ class PlayerRoutingTest {
         @Language("JSON")
         val expected = """[
                 {
+                    "id": "2",
+                    "pseudo": "first",
+                    "score": 20
+                },
+                {
                     "id": "1",
-                    "pseudo": "aRandomPseudo",
+                    "pseudo": "second",
                     "score": 10
                 }
             ]"""

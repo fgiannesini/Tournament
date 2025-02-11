@@ -18,7 +18,9 @@ fun Application.playerRouting() {
     }
     routing {
         get("/players") {
-            val players = playerService.findAll().map { PlayerInformation.from(it) }
+            val players = playerService.findAll()
+                .map { PlayerInformation.from(it) }
+                .sortedByDescending { it.score }
             call.respond(players)
         }
         get("/players/{playerId}") {
