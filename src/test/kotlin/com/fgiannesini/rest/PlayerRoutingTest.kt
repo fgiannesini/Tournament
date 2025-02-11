@@ -1,8 +1,6 @@
 package com.fgiannesini.rest
 
-import com.fgiannesini.domain.NOT_FOUND
-import com.fgiannesini.domain.Player
-import com.fgiannesini.domain.PlayerService
+import com.fgiannesini.domain.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -19,10 +17,11 @@ import kotlin.test.Test
 
 class PlayerRoutingTest {
 
-    private fun Application.testModule(playerService: PlayerService) {
+    private fun Application.testModule(playerService: PlayerService, rankingService: RankingService) {
         install(Koin) {
             modules(module {
                 single<PlayerService> { playerService }
+                single<RankingService> { rankingService }
             })
         }
         playerRouting()
@@ -32,7 +31,10 @@ class PlayerRoutingTest {
     fun `Should get a player`() = testApplication {
         val playerService = mockk<PlayerService>()
         every { playerService.get("1") } returns Player("1", "aRandomPseudo", 5)
-        application { testModule(playerService) }
+
+        val rankingService = mockk<RankingService>()
+        every { rankingService.get(Player("1", "aRandomPseudo", 5)) } returns Ranking(4)
+        application { testModule(playerService, rankingService) }
 
         val response = client.get("/players/1")
 
@@ -41,7 +43,8 @@ class PlayerRoutingTest {
         val expected = """{
             "id": "1",
             "pseudo": "aRandomPseudo",
-            "score": 5
+            "score": 5,
+            "rank" : 4
             }"""
         assertEquals(expected, response.bodyAsText(), JSONCompareMode.STRICT)
         verify(exactly = 1) { playerService.get(any()) }
@@ -51,7 +54,7 @@ class PlayerRoutingTest {
     fun `Should return an error when a player is not got`() = testApplication {
         val playerService = mockk<PlayerService>()
         every { playerService.get(any()) } returns NOT_FOUND
-        application { testModule(playerService) }
+        application { testModule(playerService, mockk<RankingService>()) }
 
         val response = client.get("/players/1")
 
@@ -62,7 +65,7 @@ class PlayerRoutingTest {
     fun `Should create a player`() = testApplication {
         val playerService = mockk<PlayerService>()
         every { playerService.create("aRandomPseudo") } returns Player("1", "aRandomPseudo", 0)
-        application { testModule(playerService) }
+        application { testModule(playerService, mockk<RankingService>()) }
 
         @Language("JSON")
         val body = """{
@@ -82,7 +85,7 @@ class PlayerRoutingTest {
     fun `Should update a player`() = testApplication {
         val playerService = mockk<PlayerService>()
         every { playerService.update("1", 10) } returns Player("1", "aRandomPseudo", 10)
-        application { testModule(playerService) }
+        application { testModule(playerService, mockk<RankingService>()) }
 
         @Language("JSON")
         val body = """{
@@ -98,7 +101,7 @@ class PlayerRoutingTest {
 
     @Test
     fun `Should return an error when player id to update is not provided`() = testApplication {
-        application { testModule(mockk<PlayerService>()) }
+        application { testModule(mockk<PlayerService>(), mockk<RankingService>()) }
 
         @Language("JSON")
         val body = """{
@@ -115,7 +118,7 @@ class PlayerRoutingTest {
     fun `Should return an error when player id to update is not found`() = testApplication {
         val playerService = mockk<PlayerService>()
         every { playerService.update("1", 10) } returns NOT_FOUND
-        application { testModule(playerService) }
+        application { testModule(playerService, mockk<RankingService>()) }
 
         @Language("JSON")
         val body = """{
@@ -132,7 +135,7 @@ class PlayerRoutingTest {
     fun `Should delete all players`() = testApplication {
         val playerService = mockk<PlayerService>()
         every { playerService.deleteAll() } just runs
-        application { testModule(playerService) }
+        application { testModule(playerService, mockk<RankingService>()) }
 
         val response = client.delete("/players")
         assertEquals(HttpStatusCode.NoContent, response.status)
@@ -146,7 +149,7 @@ class PlayerRoutingTest {
             Player("1", "second", 10),
             Player("2", "first", 20)
         )
-        application { testModule(playerService) }
+        application { testModule(playerService, mockk<RankingService>()) }
 
         val response = client.get("/players")
 

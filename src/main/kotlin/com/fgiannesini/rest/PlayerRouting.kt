@@ -2,6 +2,7 @@ package com.fgiannesini.rest
 
 import com.fgiannesini.domain.NOT_FOUND
 import com.fgiannesini.domain.PlayerService
+import com.fgiannesini.domain.RankingService
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -13,6 +14,7 @@ import org.koin.ktor.ext.inject
 
 fun Application.playerRouting() {
     val playerService: PlayerService by inject()
+    val rankingService: RankingService by inject()
     install(ContentNegotiation) {
         json()
     }
@@ -27,7 +29,10 @@ fun Application.playerRouting() {
             val playerId = call.parameters["playerId"]
             when (val player = playerService.get(playerId!!)) {
                 NOT_FOUND -> call.respond(HttpStatusCode.NotFound)
-                else -> call.respond(PlayerInformation.from(player))
+                else -> {
+                    val ranking = rankingService.get(player)
+                    call.respond(PlayerDetails.from(player, ranking))
+                }
             }
         }
         post("/players") {
